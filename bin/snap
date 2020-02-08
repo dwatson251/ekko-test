@@ -1,0 +1,86 @@
+#!/bin/php
+<?php
+
+use Snap\Entity\Monitor;
+use Snap\Entity\Player;
+use Snap\Exception\RuleNotValidException;
+use Snap\Exception\WrongArgumentTypeException;
+use Snap\Type\RuleTypes;
+
+require(__DIR__ . '/../vendor/autoload.php');
+
+function askDecks() {
+    $decks = readline('How many decks do you want to play with? (6)'.PHP_EOL);
+
+    $decks = intval($decks);
+
+    if (!is_int($decks)) {
+        print('You must specify a number! Try again:'.PHP_EOL);
+        return askDecks();
+    }
+
+    return $decks;
+}
+
+function askRules() {
+    $rule = readline('
+        Which rule would you line to play with? (1) '.PHP_EOL.'
+            (1) Matching Suit Only '.PHP_EOL.';
+            (2) Matching Rank Only '.PHP_EOL.'
+            (3) Matching Suit and Rank '.PHP_EOL.'
+    '.PHP_EOL);
+
+    $rule = intval($rule);
+
+    if (!is_int($rule)) {
+        print('You must specify a number! Try again:'.PHP_EOL);
+        return askRules();
+    }
+
+    if (!in_array($rule, [RuleTypes::MATCHING_SUIT, RuleTypes::MATCHING_RANK, RuleTypes::MATCHING_RANK_AND_SUIT])) {
+        print('You specified a non-existent rule. Try again:'.PHP_EOL);
+        askRules();
+    }
+
+    return $rule;
+}
+
+$decks = askDecks();
+$rules = askRules();
+$playerCount = 2;
+
+// Some bootstrapping to occur here
+$monitor = new Monitor($rules, $decks, $playerCount);
+$players = $monitor->getPlayers();
+
+/**
+ * @var Player $player
+ */
+while (!$monitor->isGameOverConditionMet()) {
+    foreach ($players as $player) {
+
+        if ($monitor->hasMatchingCards()) {
+            $winner = $monitor->determineFastestSnap();
+            $cardsInPlayCount = $monitor->getCardsInPlayCount();
+            $winner->doSnap($cardsInPlayCount);
+            print($winner->getName() . ' won and wins ' . $cardsInPlayCount . ' points.' . PHP_EOL);
+            $monitor->clearCardsInPlay();
+        }
+
+        try {
+            $playedCard = $monitor->addCardToPlay($player->getTopCard());
+        } catch (\Snap\Exception\CardAlreadyInPlayException $e) {
+            continue;
+        } catch (\Snap\Exception\PlayerHasNoCardsException $e) {
+            continue;
+        }
+
+        print($player->getName() . 'played card '. $playedCard->getSuit()->getType() .':' . $playedCard->getRank());
+
+    }
+
+    sleep(0);
+}
+
+print('The winner is '. $monitor->determineWinner()->getName() . '.' . PHP_EOL);
+

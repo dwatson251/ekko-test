@@ -1,0 +1,14 @@
+{
+    "name": "ekkosense-tech-test/snap",
+    "description": "Watch a exciting battle of snap take place right within your CLI",
+    "type": "project",
+    "require": {
+        "phpunit/phpunit": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Snap\\": "Snap/",
+            "Test\\": "Tests"
+        }
+    }
+}
