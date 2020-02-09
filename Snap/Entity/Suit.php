@@ -2,21 +2,26 @@
 
 namespace Snap\Entity;
 
+use Snap\Type\SuitTypes;
+
 class Suit
 {
     /**
-     * @var int The type of the suit
+     * @var int The code
      */
-    private $type;
+    private $code;
+
+    private $name;
 
     /**
      * @var string The colour of this suit
      */
     private $colour;
 
-    public function __construct(int $type, string $colour)
+    public function __construct(int $code, string $name, string $colour)
     {
-        $this->type = $type;
+        $this->code = $code;
+        $this->name = $name;
         $this->colour = $colour;
     }
 
@@ -29,10 +34,38 @@ class Suit
     }
 
     /**
-     * @return string
+     * @return mixed
      */
-    public function getType(): int
+    public function getName()
     {
-        return $this->type;
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     * @return Suit
+     */
+    public function setName($name): Suit
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCode(): int
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param int $code
+     * @return Suit
+     */
+    public function setCode(int $code): Suit
+    {
+        $this->code = $code;
+        return $this;
     }
 }

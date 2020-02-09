@@ -10,7 +10,7 @@ class Card
     private $suit;
 
     /**
-     * @var int
+     * @var Rank
      */
     private $rank;
 
@@ -24,7 +24,7 @@ class Card
      */
     private $dealt = false;
 
-    public function __construct(Suit $suit, int $rank)
+    public function __construct(Suit $suit, Rank $rank)
     {
         $this->suit = $suit;
         $this->rank = $rank;
@@ -39,9 +39,9 @@ class Card
     }
 
     /**
-     * @return int
+     * @return Rank
      */
-    public function getRank(): int
+    public function getRank(): Rank
     {
         return $this->rank;
     }

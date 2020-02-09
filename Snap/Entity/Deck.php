@@ -2,8 +2,8 @@
 
 namespace Snap\Entity;
 
-use Snap\Type\RankTypes;
-use Snap\Type\SuitTypes;
+use Snap\Repository\RankRepository;
+use Snap\Repository\SuitRepository;
 
 class Deck
 {
@@ -12,30 +12,9 @@ class Deck
      */
     private $cards = [];
 
-    private $ranks = [
-        RankTypes::ACE,
-        RankTypes::TWO,
-        RankTypes::THREE,
-        RankTypes::FOUR,
-        RankTypes::FIVE,
-        RankTypes::SIX,
-        RankTypes::SEVEN,
-        RankTypes::EIGHT,
-        RankTypes::NINE,
-        RankTypes::TEN,
-        RankTypes::JACK,
-        RankTypes::QUEEN,
-        RankTypes::KING,
-    ];
-
-    private $suits;
-
     public function __construct()
     {
-        $this->suits = SuitTypes::getSuits();
-
         $this->buildDeck();
-        $this->shuffleDeck();
     }
 
     /**
@@ -44,19 +23,23 @@ class Deck
      */
     private function buildDeck()
     {
-        foreach ($this->suits as $suit) {
-            foreach ($this->ranks as $rank) {
+        $suitRepository = new SuitRepository();
+        $rankRepository = new RankRepository();
+
+        foreach ($suitRepository->get() as $suit) {
+            foreach ($rankRepository->get() as $rank) {
                 $this->cards[] = new Card($suit, $rank);
             }
         }
     }
 
     /**
-     * @ TODO: Implement
+     * Shuffles the cards
      */
-    public function shuffleDeck()
+    public function shuffle(): array
     {
-
+        shuffle($this->cards);
+        return $this->cards;
     }
 
     /**

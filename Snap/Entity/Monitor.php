@@ -40,8 +40,8 @@ class Monitor
 
         for ($deckCount = $decksToDeal; $deckCount !== 0; $deckCount--) {
             $deck = new Deck();
-            $deck->shuffleDeck();
-            $cards += $deck->getCards();
+            $deck->shuffle();
+            $cards = array_merge($cards, $deck->getCards());
         }
 
         $this->dealer->dealCards($cards, $this->players);
@@ -76,7 +76,7 @@ class Monitor
         /*
          * Obtains the top two cards from the played cards
          */
-        $cardsToTest = $this->examineCards($this->cardsInPlay, 2);
+        $cardsToTest = $this->examineCardsInPlay(2);
 
         if (count($cardsToTest) !== 2) {
             return false;
@@ -89,6 +89,8 @@ class Monitor
                 return $this->isMatchingRank(...$cardsToTest);
             case RuleTypes::MATCHING_RANK_AND_SUIT:
                 return $this->isMatchingSuitAndRank(...$cardsToTest);
+            case RuleTypes::MATCHING_COLOUR:
+                return $this->isMatchingColour(...$cardsToTest);
         }
     }
 
@@ -101,7 +103,7 @@ class Monitor
      */
     public function isMatchingSuit(Card $cardA, Card $cardB): bool
     {
-        return ($cardA->getSuit()->getType() === $cardB->getSuit()->getType());
+        return ($cardA->getSuit()->getCode() === $cardB->getSuit()->getCode());
     }
 
     /**
@@ -113,7 +115,7 @@ class Monitor
      */
     public function isMatchingRank(Card $cardA, Card $cardB): bool
     {
-        return ($cardA->getRank() === $cardB->getRank());
+        return ($cardA->getRank()->getValue() === $cardB->getRank()->getValue());
     }
 
     /**
@@ -129,15 +131,27 @@ class Monitor
     }
 
     /**
+     * "Snap" can be called when the colour of the cards match
+     *
+     * @param Card $cardA
+     * @param Card $cardB
+     * @return bool
+     */
+    public function isMatchingColour(Card $cardA, Card $cardB)
+    {
+        return ($cardA->getSuit()->getColour() === $cardB->getSuit()->getColour());
+    }
+
+    /**
      * Returns an array of Cards
      *
      * @param array<Card> $cards
      * @param int $cardsToExamine
      * @return array<Card>
      */
-    public function examineCards(array $cards, int $cardsToExamine = 2)
+    public function examineCardsInPlay(int $cardsToExamine = 2)
     {
-        return array_slice($cards, 0, -$cardsToExamine);
+        return array_slice($this->cardsInPlay, -$cardsToExamine, $cardsToExamine);
     }
 
     /**
@@ -150,6 +164,7 @@ class Monitor
 
     /**
      * @param Card $card
+     * @return Card
      * @throws CardAlreadyInPlayException
      */
     public function addCardToPlay(Card $card)

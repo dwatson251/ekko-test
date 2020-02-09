@@ -24,4 +24,9 @@ class RuleTypes
      * "Snap" can be called when both the rank and suit match
      */
     public const MATCHING_RANK_AND_SUIT = 3;
+
+    /*
+     * Snap can be called when the card matches the colour
+     */
+    public const MATCHING_COLOUR = 4;
 }
