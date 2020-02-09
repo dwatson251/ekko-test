@@ -12,23 +12,22 @@ class CommandLine
      */
     public function ask(string $question, array $options = null, int $default = null)
     {
-        $output = $question;
-
         if (!empty($default)) {
-            $output .= " ($default)";
+            $question .= " ($default)";
         }
 
-        $output .= PHP_EOL;
+        print($question .PHP_EOL);
+        print(PHP_EOL);
 
         if (!empty($options)) {
             foreach ($options as $key => $option) {
                 $optionKey = $key + 1;
-                $output .= PHP_EOL;
-                $output .= "($optionKey) $option" . PHP_EOL;
+                print("($optionKey) $option" . PHP_EOL);
             }
+            print(PHP_EOL);
         }
-
-        $input = readline($output);
+        
+        $input = readline();
 
         if (!empty($options) && count($options) && !$this->isInt($input)) {
             return $this->ask($question, $options, $default);
